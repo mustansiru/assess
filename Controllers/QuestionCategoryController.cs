@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using assess.Models;
 using assess.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace assess.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionCategoryController : ControllerBase
