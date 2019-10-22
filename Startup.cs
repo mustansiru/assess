@@ -1,29 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using assess.Helpers;
 using assess.Models;
+using assess.Services;
+using assess.Services.Intefaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
-
-
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using assess.Services;
-using Microsoft.OpenApi.Models;
-using assess.Helpers;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using assess.Services.Intefaces;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 namespace assess
 {
@@ -75,6 +63,7 @@ namespace assess
             // services
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton<QuestionCategoryService>();
+            services.AddSingleton<QuestionService>();
 
             // Register Swagger
             services.AddSwaggerGen(c =>
