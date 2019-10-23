@@ -1,7 +1,9 @@
 ﻿using assess.Models;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace assess.Services
 {
@@ -22,8 +24,12 @@ namespace assess.Services
         public List<Question> GetByType(string type) =>
             _questions.Find(q => q.Type == type).ToList();
 
-        public Question Get(string id) =>
-            _questions.Find(q => q.Id == id).FirstOrDefault();
+        public Question Get(string id)
+        {
+            var result = _questions.Find(q => q.Id == id).FirstOrDefault();
+            return result;
+        }
+            
 
         public List<Question> Get()
         {
@@ -31,9 +37,15 @@ namespace assess.Services
         }
 
         public Question Create(Question question)
-        {
+        { 
+            //if (contents != null)
+            //{
+            //    var fileId = UploadFile(DateTime.UtcNow.Ticks.ToString(), contents);
+            //    question.ContentImageId = fileId;
+            //}
             // insert into DB
             _questions.InsertOne(question);
+            
             return question;
         }
 
@@ -45,5 +57,20 @@ namespace assess.Services
 
         public void Remove(string id) =>
             _questions.DeleteOne(q => q.Id == id);
+
+        public string UploadFile(string fileId, byte[] fileStream)
+        {
+            var bucket = new GridFSBucket(_questions.Database, new GridFSBucketOptions
+            {
+                BucketName = "richmedia",
+                ChunkSizeBytes = 1048576, // 1MB
+                WriteConcern = WriteConcern.WMajority,
+                ReadPreference = ReadPreference.Secondary
+            });
+
+            var id = bucket.UploadFromBytes(fileId, fileStream);
+
+            return id.ToString();
+        }
     }
 }

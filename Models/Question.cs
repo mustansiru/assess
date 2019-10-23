@@ -16,7 +16,7 @@ namespace assess.Models
         public string Type { get; set; }
         public string QuestionHeading { get; set; }
         public string Content { get; set; }
-        public string ContentImageUrl { get; set; }
+        public byte[] ContentImage { get; set; }
         public List<Choice> CorrectChoices { get; set; }
         public List<Choice> Choices { get; set; }
         public decimal Score { get; set; }

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using assess.Models;
 using assess.Services;
+using assess.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace assess.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionsController : ControllerBase
@@ -21,7 +24,7 @@ namespace assess.Controllers
         }
 
         [HttpGet("{id:length(24)}")]
-        public ActionResult<Question> GetQuestionsById([FromQuery] string id) => _service.Get(id);
+        public ActionResult<Question> GetQuestionsById(string id) => _service.Get(id);
 
         [HttpGet]
         public ActionResult<List<Question>> GetQuestionsByTypeOrCategory([FromQuery] string type = null, [FromQuery] string category = null)
@@ -45,10 +48,35 @@ namespace assess.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Question> Create(Question question)
+        public ActionResult<Question> CreateAsync([FromForm] QuestionViewModel question)
         {
-            _service.Create(question);
-            return CreatedAtRoute("GetQuestion", new { id = question.Id.ToString() }, question);
+            Question q = new Question
+            {
+                Category = question.Category,
+                Content = question.Content,
+                QuestionHeading = question.QuestionHeading,
+                Score = question.Score,
+                Type = question.Type
+            };
+
+            byte[] contents = null;
+            if (question.ContentImage != null || question.ContentImage.Length > 0)
+            {
+                contents = new byte[question.ContentImage.Length];
+                using (var stream = question.ContentImage.OpenReadStream())
+                {
+                    for (int i = 0; i < question.ContentImage.Length; i++)
+                    {
+                        contents[i] = (byte)stream.ReadByte();
+                    }
+
+                    q.ContentImage = contents;
+                }
+            }
+            
+            _service.Create(q);
+
+            return Ok(new { status = true, questionId = q.Id, message = "Question created successfully" }); //CreatedAtRoute("GetQuestion", new { id = question.Id }, question);
         }
 
         [HttpPut("{id:length(24)}")]

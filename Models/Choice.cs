@@ -11,6 +11,6 @@ namespace assess.Models
     {
         public int Order { get; set; }
         public string ChoiceText { get; set; }
-        public string ChoiceImage { get; set; }
+        public byte[] ChoiceImage { get; set; }
     }
 }
